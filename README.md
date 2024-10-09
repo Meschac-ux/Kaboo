@@ -1,50 +1,67 @@
-# Welcome to your Expo app 👋
+# 🌍 Kaboo - Application de Planification de Voyage
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Bienvenue dans **Kaboo**, votre compagnon idéal pour planifier vos voyages et sorties ! 
 
-## Get started
+## ✨ Signification du Nom
 
-1. Install dependencies
+**Kaboo** signifie "Bienvenue chez vous" dans certaines langues africaines, reflétant notre engagement à offrir une expérience de voyage qui vous fait sentir chez vous, où que vous soyez sur le continent. Nous croyons que chaque voyage devrait être enrichissant et réconfortant, comme rentrer chez soi.
 
+## ✈️ Fonctionnalités
+
+- **Choix de Destination**: Sélectionnez votre destination de rêve parmi une vaste liste de lieux.
+- **Budget Personnalisé**: Indiquez votre budget et laissez Kaboo s'occuper du reste.
+- **Planification Intelligent**: Grâce à l'intégration de l'API Google et de l'intelligence artificielle Gemini, Kaboo génère un planning détaillé incluant :
+  - 🏨 **Hôtels** : Trouvez les meilleures options d'hébergement.
+  - 🎉 **Activités** : Découvrez les meilleures activités à faire pendant votre séjour.
+  - 🍽️ **Restaurants** : Recevez des recommandations sur où manger.
+  - 🚗 **Transport** : Obtenez des conseils sur le transport local et les horaires.
+  
+## 🚀 Technologies Utilisées
+
+- **React Native** : Pour le développement de l'application mobile.
+- **Expo** : Pour simplifier le processus de développement et de déploiement.
+- **Firebase** : Pour la gestion de l'authentification, de la base de données en temps réel et du stockage.
+- **Google Cloud Platform** : Pour l'hébergement et l'utilisation des API Google.
+
+## 📸 Captures d'Écran
+
+Ajoutez ici des captures d'écran de votre application pour montrer son interface et ses fonctionnalités.
+
+![Capture d'écran 1](./captures/ecran1.png)
+![Capture d'écran 2](./captures/ecran2.png)
+
+## 📦 Installation
+
+1. **Clonez le dépôt** :
+   ```bash
+   git clone https://github.com/votre-utilisateur/kaboo.git
+   ```
+   
+2. **Naviguez dans le dossier du projet** :
+   ```bash
+   cd kaboo
+   ```
+
+3. **Installez les dépendances** :
    ```bash
    npm install
    ```
 
-2. Start the app
-
+4. **Lancez l'application** :
    ```bash
-    npx expo start
+   expo start
    ```
 
-In the output, you'll find options to open the app in a
+## 🔑 Configuration
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Pour utiliser les fonctionnalités basées sur Google, vous devez configurer votre projet dans la [Google Cloud Console](https://console.cloud.google.com/). Assurez-vous d'activer les API nécessaires et d'obtenir les clés API.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+Merci d'utiliser Kaboo pour vos projets de voyage ! 🗺️✈️
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Remarques supplémentaires :
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Vous pouvez ajouter d'autres sections selon vos besoins ou ajuster le contenu pour le rendre plus personnel.
+- N’oubliez pas de remplacer les informations de contact et de lien par les vôtres.
