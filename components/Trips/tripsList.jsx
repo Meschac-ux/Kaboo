@@ -65,7 +65,7 @@ const TripsList = ({ userTrips }) => {
             />
           )}
           <View style={{ marginLeft: 10, gap: 4 }}>
-            <Text style={{ fontFamily: "outfit-medium", fontSize: 16 }}>
+            <Text style={{ fontFamily: "outfit-medium", fontSize: 16, maxWidth: 200 }}>
               {trip?.locationInfo?.name || "Destination inconnue"}
             </Text>
             <Text style={{ fontFamily: "outfit", color: COLORS.GRAY }}>
@@ -126,7 +126,7 @@ const TripsList = ({ userTrips }) => {
       <View style={{ marginTop: 10 }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View>
-            <Text style={{ fontFamily: "outfit-medium", fontSize: 20 }}>
+            <Text style={{ fontFamily: "outfit-medium", fontSize: 20, maxWidth: 200 }}>
               {firstTrip?.locationInfo?.name || "Destination inconnue"}
             </Text>
             <Text

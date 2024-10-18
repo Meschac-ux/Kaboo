@@ -35,15 +35,15 @@ const GenerateTrip = () => {
     const result = await chatSession.sendMessage(PROMPT);
     const rawResponse = result.response.text();
 
-    console.log("Raw Response:", rawResponse); 
+    console.log("Raw Response:", rawResponse);
     let cleanedResponse = rawResponse
       .trim()
-      .replace(/^[^\{]*/, "") 
-      .replace(/(^[`]+|[`]+$)/g, "") 
-      .replace(/`+/g, ""); 
+      .replace(/^[^\{]*/, "")
+      .replace(/(^[`]+|[`]+$)/g, "")
+      .replace(/`+/g, "");
 
     const jsonMatch = cleanedResponse.match(/\{.*\}/s);
-    cleanedResponse = jsonMatch ? jsonMatch[0] : ""; 
+    cleanedResponse = jsonMatch ? jsonMatch[0] : "";
 
     console.log("Cleaned Response:", cleanedResponse);
 
@@ -63,7 +63,7 @@ const GenerateTrip = () => {
         // Continue with saving the trip response
         const docRef = await addDoc(collection(store, "userTrips"), {
           userEmail: user.email,
-          tripPlan: formatTrip(tripResp),
+          tripPlan: tripResp,
           tripData: JSON.stringify(travelData),
           createdAt: new Date().toISOString(),
         });

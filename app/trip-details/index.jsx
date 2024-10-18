@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
-import { COLORS } from "../../configs/style";
+import { COLORS } from "../../configs/style"; // Assurez-vous que ce chemin est correct
 import moment from "moment";
 
 const TripDetails = () => {
@@ -23,14 +23,77 @@ const TripDetails = () => {
 
   const [tripDetails, setTripDetails] = useState({});
   const [openDays, setOpenDays] = useState([]);
+  const [openActivities, setOpenActivities] = useState([]);
+  const [openItineraryPlan, setOpenItineraryPlan] = useState([]);
 
   // Toggle for opening and closing day details
   const toggleDay = (index) => {
-    setOpenDays((prevOpenDays) => 
+    setOpenDays((prevOpenDays) =>
       prevOpenDays.includes(index)
         ? prevOpenDays.filter((dayIndex) => dayIndex !== index)
         : [...prevOpenDays, index]
     );
+  };
+
+  // Toggle for opening and closing activity details
+  const toggleActivity = (index) => {
+    setOpenActivities((prevOpenActivities) =>
+      prevOpenActivities.includes(index)
+        ? prevOpenActivities.filter((activityIndex) => activityIndex !== index)
+        : [...prevOpenActivities, index]
+    );
+  };
+
+  // Toggle for opening and closing itinerary plan
+  const toggleItineraryPlan = (index) => {
+    setOpenItineraryPlan((prevOpenItineraryPlan) =>
+      prevOpenItineraryPlan.includes(index)
+        ? prevOpenItineraryPlan.filter(
+            (itineraryIndex) => itineraryIndex !== index
+          )
+        : [...prevOpenItineraryPlan, index]
+    );
+  };
+
+  // Group itinerary plan by day
+  const groupItineraryByDay = (itineraryPlan) => {
+    return itineraryPlan.reduce((acc, plan) => {
+      const day = plan.jour;
+      if (!acc[day]) {
+        acc[day] = [];
+      }
+      acc[day].push(plan);
+      return acc;
+    }, {});
+  };
+
+  // Group activities by day
+  const groupActivitiesByDay = (activities) => {
+    return activities.reduce((acc, activity) => {
+      const day = activity.jour;
+      if (!acc[day]) {
+        acc[day] = [];
+      }
+      acc[day].push(activity);
+      return acc;
+    }, {});
+  };
+
+  const parseIfNeeded = (data) => {
+    if (typeof data === "object" && data !== null) {
+      return data;
+    }
+
+    if (typeof data === "string") {
+      try {
+        return JSON.parse(data);
+      } catch (error) {
+        console.error("Error parsing JSON:", error);
+        return {}; // Return empty object if parsing fails
+      }
+    }
+
+    return {};
   };
 
   useEffect(() => {
@@ -49,9 +112,22 @@ const TripDetails = () => {
   }, [trip]);
 
   const tripData = tripDetails?.tripData
-    ? JSON.parse(tripDetails?.tripData)
+    ? JSON.parse(tripDetails.tripData)
     : {};
-  const tripPlan = tripDetails?.tripPlan || {};
+
+  const tripPlan = parseIfNeeded(tripDetails?.tripPlan);
+  const itinerary = tripPlan?.itinéraire || null;
+  const itineraryPlan = tripPlan?.plan_d_itineraire || tripPlan?.activites;
+  const placesToVisit = tripPlan?.lieux_a_visiter || [];
+  const accommodation = tripPlan?.hebergement?.hotel || null;
+  const restaurants = tripPlan?.restauration?.restaurants || [];
+  const travelTips = tripPlan?.conseils || {};
+
+  console.log(tripPlan);
+  // Vérifiez si `activities` existe avant de grouper
+  const activities = tripDetails?.tripPlan?.activites || [];
+  const groupedActivities = groupActivitiesByDay(activities);
+  const groupedItineraryPlan = groupItineraryByDay(itineraryPlan || []);
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: COLORS.WHITE }}>
@@ -59,7 +135,7 @@ const TripDetails = () => {
       {tripData?.locationInfo?.img ? (
         <Image
           source={{
-            uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&photo_reference=${tripData?.locationInfo?.img}&key=${process.env.EXPO_PUBLIC_GOOGLE_API_KEY}`,
+            uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&photo_reference=${tripData.locationInfo.img}&key=${process.env.EXPO_PUBLIC_GOOGLE_API_KEY}`,
           }}
           style={styles.mainImage}
         />
@@ -82,203 +158,311 @@ const TripDetails = () => {
       </View>
 
       {/* Section Itinéraire */}
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Itinéraire</Text>
+      {itinerary ? (
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Itinéraire</Text>
+          {itinerary.map((jourData, index) => {
+            const isOpen = openDays.includes(index);
+            return (
+              <View key={index}>
+                <TouchableOpacity
+                  onPress={() => toggleDay(index)}
+                  style={[styles.container, { borderWidth: isOpen ? 2 : 0 }]}
+                >
+                  <View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={styles.title}>Jour {jourData.jour}</Text>
+                      <Text style={styles.icon}>{isOpen ? "-" : "+"}</Text>
+                    </View>
+                    <Text style={styles.description}>
+                      Cliquez pour {isOpen ? "masquer" : "voir"} les détails
+                    </Text>
+                  </View>
+                </TouchableOpacity>
 
-        {tripPlan?.itinéraire?.map((jourData, index) => {
-          const isOpen = openDays.includes(index);
-          return (
-            <View key={index}>
-              <TouchableOpacity
-                onPress={() => toggleDay(index)}
-                style={[styles.container, { borderWidth: isOpen ? 2 : 0 }]}
-              >
-                <View>
-                  <Text style={styles.title}>Jour {jourData.jour}</Text>
+                {isOpen && (
+                  <View style={styles.activitiesContainer}>
+                    {jourData.activites.map((activity, i) => (
+                      <View key={i} style={styles.activityItem}>
+                        <Text style={styles.activityDescription}>
+                          {activity.description}
+                        </Text>
+                        <Text style={styles.activityTime}>
+                          {activity.heure}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            );
+          })}
+        </View>
+      ) : null}
+
+      {/* Section Activités */}
+      {Object.keys(groupedActivities).length > 0 && (
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Activités</Text>
+          {Object.keys(groupedActivities).map((key, index) => {
+            const isOpen = openActivities.includes(index);
+            return (
+              <View key={index}>
+                <TouchableOpacity
+                  onPress={() => toggleActivity(index)}
+                  style={[styles.container, { borderWidth: isOpen ? 2 : 0 }]}
+                >
+                  <View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text style={styles.title}>Jour {key}</Text>
+                      <Text style={styles.icon}>{isOpen ? "-" : "+"}</Text>
+                    </View>
+                    <Text style={styles.description}>
+                      Cliquez pour {isOpen ? "masquer" : "voir"} les détails
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                {isOpen && (
+                  <View style={styles.activitiesContainer}>
+                    {groupedActivities[key].map((activityDetail, i) => (
+                      <View key={i} style={styles.activityItem}>
+                        <Text style={styles.activityDescription}>
+                          {activityDetail?.description}
+                        </Text>
+                        <Text style={styles.activityTime}>
+                          {activityDetail.heure}
+                        </Text>
+                        <Text style={styles.activityDescription}>
+                          {activityDetail?.activite}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            );
+          })}
+        </View>
+      )}
+
+      {/* Section Plan d'Itinéraire */}
+      {Object.keys(groupedItineraryPlan).length > 0 && (
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Plan d'Itinéraire</Text>
+          {Object.keys(groupedItineraryPlan).map((key, index) => {
+            const isOpen = openItineraryPlan.includes(index);
+            return (
+              <View key={index}>
+                <TouchableOpacity
+                  onPress={() => toggleItineraryPlan(index)}
+                  style={[styles.container, { borderWidth: isOpen ? 2 : 0 }]}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={styles.title}>Jour {key}</Text>
+                    <Text style={styles.icon}>{isOpen ? "-" : "+"}</Text>
+                  </View>
                   <Text style={styles.description}>
                     Cliquez pour {isOpen ? "masquer" : "voir"} les détails
                   </Text>
-                </View>
-                <Text style={styles.icon}>{isOpen ? "-" : "+"}</Text>
-              </TouchableOpacity>
+                </TouchableOpacity>
 
-              {isOpen && (
-                <View style={styles.activitiesContainer}>
-                  {jourData.activites.map((activity, i) => (
-                    <View key={i} style={styles.activityItem}>
-                      <Text style={styles.activityDescription}>
-                        {activity.description}
-                      </Text>
-                      <Text style={styles.activityTime}>{activity.heure}</Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-            </View>
-          );
-        })}
-      </View>
+                {isOpen && (
+                  <View style={styles.activitiesContainer}>
+                    {groupedItineraryPlan[key].map((planItem, i) => (
+                      <View key={i} style={styles.activityItem}>
+                        <Text style={styles.activityTime}>
+                          {planItem.heure}
+                        </Text>
+                        {planItem?.description && (
+                          <Text style={styles.activityDescription}>
+                            {planItem.description}
+                          </Text>
+                        )}
+
+                        {planItem?.activite && (
+                          <Text style={styles.activityDescription}>
+                            {planItem.activite}
+                          </Text>
+                        )}
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            );
+          })}
+        </View>
+      )}
 
       {/* Section Lieux à Visiter */}
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Lieux à Visiter</Text>
-        <FlatList
-          data={tripPlan?.lieux_a_visiter}
-          horizontal
-          renderItem={({ item }) => (
-            <View style={styles.lieuCard}>
-              <Image
-                source={require("../../assets/images/card.jpg")}
-                style={styles.lieuImage}
-              />
-              <Text style={styles.lieuName}>{item.nom}</Text>
-              <Text style={[{ marginTop: 4, fontFamily: 'outfit-medium'}]}>{item.description}</Text>
-              <Text style={styles.lieuPrice}>Entrée: {item.prix_entree}</Text>
-            </View>
-          )}
-          keyExtractor={(item) => item.nom}
-          showsHorizontalScrollIndicator={false}
-        />
-      </View>
+      {placesToVisit.length > 0 && (
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Lieux à Visiter</Text>
+          <FlatList
+            data={placesToVisit}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <View style={styles.lieuCard}>
+                <Image
+                  source={require("../../assets/images/card.jpg")}
+                  style={styles.lieuImage}
+                />
+                <Text style={styles.lieuName}>{item.nom}</Text>
+                <Text style={styles.lieuDescription}>{item.description}</Text>
+              </View>
+            )}
+            keyExtractor={(item) => item.id}
+          />
+        </View>
+      )}
 
-      {/* Section Hôtels */}
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Hôtels</Text>
+      {/* Section Hébergement */}
+      {accommodation && (
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Hébergement</Text>
           <View style={styles.hotelCard}>
-            <Text style={styles.hotelName}>{tripPlan?.hebergement?.hotel?.nom}</Text>
-            <Text style={styles.hotelPrice}>Prix: {tripPlan?.hebergement?.hotel?.prix}</Text>
-            <Text style={styles.hotelStars}>{tripPlan?.hebergement?.hotel?.evaluation} étoiles</Text>
+            <Text style={styles.hotelName}>{accommodation.nom}</Text>
+            <Text style={styles.hotelPrice}>{accommodation.prix}</Text>
+            <Text style={styles.hotelStars}>
+              {accommodation.evaluation} Étoiles
+            </Text>
             <TouchableOpacity style={styles.bookButton}>
               <Text style={styles.bookButtonText}>Réserver</Text>
             </TouchableOpacity>
           </View>
-      </View>
+        </View>
+      )}
 
       {/* Section Restaurants */}
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Restaurants Recommandés</Text>
-        {tripPlan?.restauration?.restaurants?.map((restaurant, index) => (
-          <View key={index} style={styles.restaurantCard}>
-            <Text style={styles.restaurantName}>{restaurant.nom}</Text>
-            <Text style={styles.restaurantDescription}>
-              {restaurant.description}
-            </Text>
-          </View>
-        ))}
-      </View>
+      {restaurants.length > 0 && (
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Restaurants</Text>
+          {restaurants.map((restaurant, index) => (
+            <View key={index} style={styles.restaurantCard}>
+              <Text style={styles.restaurantName}>{restaurant.nom}</Text>
+              <Text style={styles.restaurantDescription}>
+                {restaurant.description}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
 
-      {/* Section Conseils */}
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Conseils pour le Voyage</Text>
-        <Text style={{ fontFamily: "outfit" }}>
-          {tripPlan?.conseils?.durabilite}
-        </Text>
-      </View>
+      {/* Section Conseils de Voyage */}
+      {travelTips && (
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Conseils de Voyage</Text>
+          <Text style={styles.tip}>{travelTips?.durabilite}</Text>
+        </View>
+      )}
     </ScrollView>
   );
 };
 
-export default TripDetails;
-
 const styles = StyleSheet.create({
   mainImage: {
+    height: 200,
     width: "100%",
-    height: 300,
-    resizeMode: "cover", // Correction pour le mode de redimensionnement
   },
   detailsHeader: {
-    padding: 12,
-    marginTop: -20,
-    backgroundColor: COLORS.WHITE,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    padding: 15,
   },
   locationTitle: {
-    fontFamily: "outfit-medium",
-    fontSize: 28,
-    color: COLORS.PRIMARY,
+    fontFamily: "outfit-bold",
+    fontSize: 24,
   },
   dateRange: {
     fontFamily: "outfit",
     color: COLORS.GRAY,
   },
   sectionContainer: {
-    padding: 12,
+    padding: 15,
   },
   sectionTitle: {
-    fontFamily: "outfit-medium",
+    fontFamily: "outfit-bold",
     fontSize: 20,
     marginBottom: 10,
-    color: COLORS.PRIMARY,
+    color: "#ff6000",
   },
   container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 14,
-    backgroundColor: "#feffdfab",
-    marginTop: 14,
-    borderRadius: 14,
-    borderColor: "#f7aa00",
-    borderWidth: 0.5,
+    backgroundColor: COLORS.LIGHT,
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
   },
   title: {
-    fontSize: 16,
     fontFamily: "outfit-medium",
-    color: "#0C0C0C",
+    fontSize: 16,
+    color: "#ff6000",
   },
   description: {
-    fontSize: 16,
     fontFamily: "outfit",
     color: COLORS.GRAY,
   },
   icon: {
     fontSize: 20,
-    fontFamily: "outfit",
   },
   activitiesContainer: {
-    paddingLeft: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: COLORS.WHITE,
-    borderRadius: 14,
-    marginTop: 10,
+    paddingLeft: 15,
   },
   activityItem: {
-    marginBottom: 10,
+    marginBottom: 5,
   },
   activityDescription: {
-    fontFamily: "outfit-medium",
-    color: COLORS.BLACK,
+    fontFamily: "outfit",
   },
   activityTime: {
     fontFamily: "outfit",
     color: COLORS.GRAY,
   },
   lieuCard: {
+    marginRight: 20,
     width: 180,
-    marginRight: 10,
   },
   lieuImage: {
-    width: 150,
-    height: 100,
+    width: "100%",
+    height: 120,
     borderRadius: 10,
+    marginBottom: 10,
   },
   lieuName: {
     fontFamily: "outfit-bold",
-    color: COLORS.PRIMARY,
+    fontSize: 16,
+    color: "#ff6000",
   },
-  lieuPrice: {
+  lieuDescription: {
     fontFamily: "outfit",
     color: COLORS.GRAY,
   },
   hotelCard: {
-    marginBottom: 20,
+    padding: 10,
+    backgroundColor: COLORS.LIGHT,
+    borderRadius: 10,
+    marginTop: 10,
   },
   hotelName: {
-    fontFamily: "outfit-bold",
+    fontFamily: "outfit-medium",
     fontSize: 18,
-    color: COLORS.PRIMARY,
   },
   hotelPrice: {
     fontFamily: "outfit",
@@ -286,28 +470,39 @@ const styles = StyleSheet.create({
   },
   hotelStars: {
     fontFamily: "outfit",
+    marginTop: 4,
     color: COLORS.GRAY,
   },
   bookButton: {
     backgroundColor: COLORS.PRIMARY,
+    borderRadius: 8,
     padding: 10,
-    borderRadius: 5,
-    marginTop: 5,
+    marginTop: 10,
+    alignItems: "center",
   },
   bookButtonText: {
     color: COLORS.WHITE,
-    textAlign: "center",
+    fontFamily: "outfit-medium",
   },
   restaurantCard: {
-    marginBottom: 20,
+    padding: 10,
+    backgroundColor: COLORS.LIGHT,
+    borderRadius: 10,
+    marginTop: 10,
   },
   restaurantName: {
-    fontFamily: "outfit-bold",
-    fontSize: 18,
-    color: COLORS.PRIMARY,
+    fontFamily: "outfit-medium",
+    fontSize: 16,
   },
   restaurantDescription: {
     fontFamily: "outfit",
     color: COLORS.GRAY,
+    marginTop: 4,
+  },
+  tip: {
+    fontFamily: "outfit",
+    color: COLORS.GRAY,
   },
 });
+
+export default TripDetails;
