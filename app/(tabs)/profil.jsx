@@ -33,7 +33,7 @@ import { signOut } from "firebase/auth";
 import { COLORS } from "../../configs/style";
 import { useRouter } from "expo-router";
 
-const Profile = ({ onLogout }) => {
+const Profile = () => {
   const [userTrips, setUserTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -235,7 +235,8 @@ const Profile = ({ onLogout }) => {
       <View style={{ flex: 1, padding: 20, backgroundColor: "#FFF" }}>
         {/* Avatar et Nom de l'utilisateur */}
         <View style={{ alignItems: "center", marginBottom: 20, marginTop: 40 }}>
-          <Ionicons name="person-circle-outline" size={200} color="#888" />
+          <Image source={require('../../assets/images/male.jpg')}  style={{ width: 200, height: 200, borderRadius: 100 }} />
+          {/* <Ionicons name="person-circle-outline" size={200} color="#888" /> */}
           <Text
             style={{
               fontSize: 24,
@@ -283,7 +284,7 @@ const Profile = ({ onLogout }) => {
               horizontal
               showsHorizontalScrollIndicator={false}
               renderItem={UserTripCard}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item?.id}
             />
           </View>
         )}
@@ -341,7 +342,7 @@ const Profile = ({ onLogout }) => {
 
         {/* Bouton de déconnexion */}
         <TouchableOpacity
-          onPress={onLogout}
+          onPress={handleLogout}
           style={{
             backgroundColor: COLORS.PRIMARY,
             marginTop: 20,

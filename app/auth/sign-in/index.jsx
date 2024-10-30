@@ -158,7 +158,7 @@ const Signin = () => {
                     onChangeText={(text) => setPassword(text)}
                     autoFocus
                     textContentType="password"
-                    secureTextEntry={isPasswordVisible}
+                    secureTextEntry={!isPasswordVisible}
                     placeholder="Entrez votre mot de passe"
                     style={styles.input}
                   />
@@ -168,9 +168,9 @@ const Signin = () => {
                     style={{ position: "absolute", right: 10, bottom: "35%" }}
                   >
                     {isPasswordVisible ? (
-                      <FontAwesome5 name="eye" size={14} color={"gray"} />
-                    ) : (
                       <FontAwesome5 name="eye-slash" size={14} color={"gray"} />
+                    ) : (
+                      <FontAwesome5 name="eye" size={14} color={"gray"} />
                     )}
                   </Pressable>
                 </View>

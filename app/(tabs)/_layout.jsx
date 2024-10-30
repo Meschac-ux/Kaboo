@@ -1,13 +1,18 @@
+import React from 'react';
+
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
-import { COLORS } from "@/configs/style"
+import { COLORS } from "@/configs/style";
 
 export default function TabLayout() {
   return (
     <Tabs
-      screenOptions={{ headerShown: false, tabBarActiveTintColor: COLORS.PRIMARY }}
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: COLORS.PRIMARY,
+      }}
     >
-      {/* <Tabs.Screen
+      <Tabs.Screen
         name="home"
         options={{
           title: "Accueil",
@@ -15,7 +20,7 @@ export default function TabLayout() {
             <FontAwesome size={28} name="home" color={color} />
           ),
         }}
-      /> */}
+      />
       <Tabs.Screen
         name="trips"
         options={{

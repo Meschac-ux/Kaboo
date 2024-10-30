@@ -10,16 +10,35 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import BackgroundImage from "@/assets/images/img-1.jpg";
 import { useNavigation, useRouter } from "expo-router";
+import * as Location from "expo-location";
+import { useStateContext } from "@/context/StateContext";
 
 const Index = () => {
   const navigation = useNavigation();
   const router = useRouter();
+  const { location, setLocation } = useStateContext();
+
+  React.useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+  
+      let loc = await Location.getCurrentPositionAsync({});
+      setLocation(loc);
+    })();
+  }, []);  
+
 
   React.useEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   });
+
+  console.log(location);
 
   return (
     <View style={styles.container}>

@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   ImageBackground,
@@ -24,7 +25,7 @@ const Signup = () => {
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
 
-  const [isPasswordVisible, setIsPasswordVisible] = React.useState(true);
+  const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
 
   const navigation = useNavigation();
@@ -162,7 +163,7 @@ const Signup = () => {
                     onChangeText={(text) => setPassword(text)}
                     autoFocus
                     textContentType="password"
-                    secureTextEntry={isPasswordVisible}
+                    secureTextEntry={!isPasswordVisible}
                     placeholder="Entrez votre mot de passe"
                     style={styles.input}
                   />
@@ -172,9 +173,9 @@ const Signup = () => {
                     style={{ position: "absolute", right: 10, bottom: "35%" }}
                   >
                     {isPasswordVisible ? (
-                      <FontAwesome5 name="eye" size={14} color={"gray"} />
-                    ) : (
                       <FontAwesome5 name="eye-slash" size={14} color={"gray"} />
+                    ) : (
+                      <FontAwesome5 name="eye" size={14} color={"gray"} />
                     )}
                   </Pressable>
                 </View>
@@ -192,7 +193,7 @@ const Signup = () => {
                     onChangeText={(text) => setConfirmPassword(text)}
                     autoFocus
                     textContentType="password"
-                    secureTextEntry={isPasswordVisible}
+                    secureTextEntry={!isPasswordVisible}
                     placeholder="Confirmer votre mot de passe"
                     style={styles.input}
                   />
@@ -202,9 +203,9 @@ const Signup = () => {
                     style={{ position: "absolute", right: 10, bottom: "35%" }}
                   >
                     {isPasswordVisible ? (
-                      <FontAwesome5 name="eye" size={14} color={"gray"} />
-                    ) : (
                       <FontAwesome5 name="eye-slash" size={14} color={"gray"} />
+                    ) : (
+                      <FontAwesome5 name="eye" size={14} color={"gray"} />
                     )}
                   </Pressable>
                 </View>
@@ -219,15 +220,19 @@ const Signup = () => {
                     borderRadius: 14,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontFamily: "outfit-medium",
-                      color: "#FFF",
-                    }}
-                  >
-                    S'inscrire
-                  </Text>
+                  {submitting ? (
+                    <ActivityIndicator color={"#FFF"} size={20} />
+                  ) : (
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontFamily: "outfit-medium",
+                        color: "#FFF",
+                      }}
+                    >
+                      S'inscrire
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </View>
 

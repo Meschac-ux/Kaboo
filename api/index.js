@@ -73,3 +73,26 @@ export const getPlacePhoto = async (photoRef) => {
     console.error(error);
   }
 };
+
+export const getNearbyPlace = async ({placeQuery, location, type}) => {
+  const options = {
+    method: "GET",
+    url: "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+    params: {
+      keyword: placeQuery, 
+      location: location,
+      radius: 1500,
+      type: type,
+      key: process.env.EXPO_PUBLIC_GOOGLE_API_KEY,
+    },
+  };
+
+  try {
+    const response = await axios.request(options);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching place data:", error);
+    return null;
+  }
+};

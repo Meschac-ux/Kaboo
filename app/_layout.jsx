@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { View, ActivityIndicator } from "react-native";
 import { auth } from "@/configs/firebase.js"; // Assurez-vous que Firebase est bien configuré
-import ContextProvider from "@/context/StateContext"
+import ContextProvider from "@/context/StateContext";
+import 'react-native-get-random-values';
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {

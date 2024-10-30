@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "kaabo",
+    "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/kaboo-splash.png",
@@ -34,9 +34,6 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {
-        "origin": false
-      },
       "eas": {
         "projectId": "506e8da0-ff11-45f3-8e2b-bde7ae97bad3"
       }
